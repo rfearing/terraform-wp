@@ -17,3 +17,5 @@
 - (optionally) run `terraform plan -var-file=".tfvars"` to see changes that will be made
 - Run `terraform apply -var-file=".tfvars"` to apply
 - Visit you eC2 instance in AWS and visit the public IP
+
+You can run `terraform destroy` to ditch anything made.

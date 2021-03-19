@@ -3,4 +3,5 @@
 .tfvars
 notes.txt
 terraform.tfstate.backup
+terraform.tfstate
 .DS_Store

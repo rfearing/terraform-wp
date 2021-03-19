@@ -7,7 +7,6 @@ resource "aws_security_group" "wordpress_allow_http" {
   name        = "wordpress_allow_http"
   description = "Allow HTTP and SSH inbound traffic"
 
-  // IMPORTANT the below should not be used on production:
   ingress {
     description = "HTTP Requests"
     from_port   = 80
@@ -37,6 +36,33 @@ resource "aws_instance" "web" {
     Name = "wordpress"
   }
 }
+
+
+resource "aws_security_group" "mysql-sg" {
+  name   = "mysql-security-group"
+  # vpc_id = "${aws_default_vpc.default.id}"
+
+  ingress {
+    description = "WordPress Traffic"
+    protocol    = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    security_groups = ["${aws_security_group.wordpress_allow_http.id}"]
+  }
+
+  egress {
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  depends_on = [
+    aws_security_group.wordpress_allow_http,
+  ]
+}
+
+
 resource "aws_db_instance" "wpdb" {
   allocated_storage    = 10
   identifier           = "sample"
@@ -49,8 +75,13 @@ resource "aws_db_instance" "wpdb" {
   password             = var.db_password
   publicly_accessible  = true
   skip_final_snapshot  = true
+  vpc_security_group_ids = [aws_security_group.mysql-sg.id]
 }
 
 output "IP"  {
   value = "${aws_instance.web.public_ip}"
+}
+
+output "DB Endpoint" {
+  value = aws_db_instance.wpdb.endpoint
 }
