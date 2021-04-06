@@ -9,3 +9,9 @@ variable "db_password" {
   type        = string
   sensitive   = true
 }
+
+variable "pub_key" {
+  description = "Public Key Pair"
+  type        = string
+  sensitive   = true
+}
